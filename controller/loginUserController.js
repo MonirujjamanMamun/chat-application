@@ -15,7 +15,10 @@ const login = async (req, res, next) => {
       $or: [{ email: req.body.username }, { mobile: req.body.username }],
     });
     if (user && user._id) {
-      const isValidPassword = bcrypt.compare(req.body.password, user.password);
+      const isValidPassword = await bcrypt.compare(
+        req.body.password,
+        user.password
+      );
       if (isValidPassword) {
         const userObject = {
           username: user.name,
@@ -27,21 +30,23 @@ const login = async (req, res, next) => {
           expiresIn: '1d',
         });
         res.cookie(process.env.TOKEN_NAME, token, {
-          maxAge: '1d',
+          maxAge: 86400000,
           httpOnly: true,
-          sign: true,
+          signed: true,
         });
         res.locals.loggedInUser = userObject;
-        res.redirect('inbox');
+        res.render('inbox');
       } else {
-        throw createError(401, 'Invalid username or password');
+        throw createError(401, 'Login failed! Please try again.');
       }
     } else {
-      throw createError(401, 'Invalid username or password');
+      throw createError(401, 'Login failed! Please try again.');
     }
   } catch (error) {
     res.render('index', {
-      data: { data: res.body.username },
+      data: {
+        username: req.body.username,
+      },
       errors: {
         common: {
           msg: error.message,
