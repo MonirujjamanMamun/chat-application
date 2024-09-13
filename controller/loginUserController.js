@@ -55,8 +55,12 @@ const login = async (req, res, next) => {
     });
   }
 };
-
+const logOut = (req, res) => {
+  res.clearCookie(process.env.TOKEN_NAME);
+  res.send('Log Out successfully');
+};
 module.exports = {
   loginUser,
   login,
+  logOut,
 };

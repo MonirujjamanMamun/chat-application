@@ -11,11 +11,13 @@ const {
   addUserValidationHandler,
 } = require('../middleware/addUserValidator');
 const decorateHtmlResponse = require('../middleware/common/decoretHtmlRespons');
+const { logInGaurd } = require('../middleware/common/loginGaurd');
 
 const userRouter = express.Router();
-userRouter.get('/', decorateHtmlResponse('User'), getUser);
+userRouter.get('/', decorateHtmlResponse('User'), logInGaurd, getUser);
 userRouter.post(
   '/',
+  logInGaurd,
   imageUpload,
   addUserValidator,
   addUserValidationHandler,
